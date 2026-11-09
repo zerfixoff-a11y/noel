@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La liste de Noël de Mathis</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎄</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --spruce: #12352b;
+    --spruce-deep: #0b2119;
+    --snow: #f5f8f6;
+    --cranberry: #c2294a;
+    --gold: #e6b94d;
+    --tag: #fbf6ec;
+    --ink: #1d2a25;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(ellipse at top, var(--spruce) 0%, var(--spruce-deep) 70%);
+    color: var(--snow);
+    font-family: "Bricolage Grotesque", system-ui, sans-serif;
+    line-height: 1.55;
+  }
+  main { max-width: 760px; margin: 0 auto; padding: 56px 20px 80px; }
+  header { text-align: center; margin-bottom: 48px; }
+  h1 {
+    font-size: clamp(2.4rem, 8vw, 4.4rem);
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    margin: 0 0 14px;
+  }
+  .sub { color: #b9cdc4; max-width: 46ch; margin: 0 auto 22px; }
+  .countdown {
+    display: inline-block;
+    padding: 8px 18px;
+    border: 1.5px solid var(--gold);
+    border-radius: 999px;
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  /* La ficelle et les étiquettes cadeaux */
+  .list { list-style: none; margin: 0; padding: 0 0 0 28px; position: relative; }
+  .list::before {
+    content: "";
+    position: absolute; left: 8px; top: 0; bottom: 0;
+    border-left: 2px dashed var(--gold);
+    opacity: .7;
+  }
+  .gift {
+    position: relative;
+    margin: 0 0 22px;
+    padding: 16px 20px 16px 26px;
+    background: var(--tag);
+    color: var(--ink);
+    border-radius: 6px 16px 16px 6px;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+  .gift::before { /* le trou de l'étiquette */
+    content: "";
+    position: absolute; left: 8px; top: 50%;
+    width: 9px; height: 9px; margin-top: -4.5px;
+    border-radius: 50%;
+    background: var(--spruce-deep);
+  }
+  .gift::after { /* le nœud sur la ficelle */
+    content: "";
+    position: absolute; left: -24px; top: 50%;
+    width: 18px; border-top: 2px solid var(--gold);
+  }
+  .gift h2 { font-size: 1.15rem; margin: 0; font-weight: 600; }
+  .gift .note {
+    font-family: "Caveat", cursive;
+    font-size: 1.3rem;
+    color: var(--cranberry);
+    line-height: 1.2;
+    margin-top: 2px;
+  }
+  .gift .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .gift .price { font-size: .9rem; color: #5b6b64; }
+  .gift a {
+    display: inline-block; margin-top: 8px;
+    color: var(--cranberry); font-weight: 600; text-underline-offset: 3px;
+  }
+  .gift a:focus-visible, .countdown:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+  .gift { display: flex; gap: 16px; align-items: center; }
+  .gift .info { flex: 1; min-width: 0; }
+  .gift img {
+    width: 120px; height: 120px; object-fit: cover; flex: none;
+    border-radius: 10px; background: #fff;
+  }
+  @media (max-width: 480px) { .gift { flex-direction: column; align-items: stretch; } .gift img { width: 100%; height: 200px; object-fit: contain; } }
+  footer { text-align: center; margin-top: 48px; color: #8fa89d; font-size: .9rem; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>La liste de Noël<br>de Mathis</h1>
+    <p class="sub">Quelques idées si tu cherches un cadeau pour moi. Merci d'y penser !</p>
+    <div class="countdown" id="countdown" aria-live="polite"></div>
+  </header>
+
+  <ul class="list" id="list"></ul>
+
+  <footer>Joyeuses fêtes ! — Mathis</footer>
+</main>
+
+<script>
+  // ✏️ MODIFIE TA LISTE ICI : une ligne = un cadeau.
+  // image : nom du fichier photo (facultatif) | name : le cadeau | note : petit mot (facultatif) | price : prix (facultatif) | link : lien (facultatif)
+  const gifts = [
+    { name: "Bureau gaming YOUDENOVA avec LED et prises", note: "noir, 150 x 48 cm, 4 tiroirs", price: "119,99 €", link: "https://www.amazon.fr/dp/B0HQF1JV23?th=1", image: "bureau.jpg" },
+    { name: "Chaise gaming GTPLAYER ergonomique avec repose-pieds", note: "noire, dossier réglable 160°", price: "99,23 €", link: "https://www.amazon.fr/dp/B0FN3JSVNZ?th=1", image: "chaise.jpg" }
+  ];
+
+  const list = document.getElementById("list");
+  gifts.forEach(g => {
+    const li = document.createElement("li");
+    li.className = "gift";
+    if (g.image) {
+      const img = document.createElement("img");
+      img.src = g.image;
+      img.alt = g.name;
+      img.loading = "lazy";
+      li.appendChild(img);
+    }
+    const info = document.createElement("div");
+    info.className = "info";
+    li.appendChild(info);
+    const row = document.createElement("div");
+    row.className = "row";
+    const h = document.createElement("h2");
+    h.textContent = g.name;
+    row.appendChild(h);
+    if (g.price) {
+      const p = document.createElement("span");
+      p.className = "price";
+      p.textContent = g.price;
+      row.appendChild(p);
+    }
+    info.appendChild(row);
+    if (g.note) {
+      const n = document.createElement("div");
+      n.className = "note";
+      n.textContent = g.note;
+      info.appendChild(n);
+    }
+    if (g.link) {
+      const a = document.createElement("a");
+      a.href = g.link;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.textContent = "Voir le produit";
+      info.appendChild(a);
+    }
+    list.appendChild(li);
+  });
+
+  // Compte à rebours jusqu'au 25 décembre
+  const el = document.getElementById("countdown");
+  const now = new Date();
+  let noel = new Date(now.getFullYear(), 11, 25);
+  if (now > noel) noel = new Date(now.getFullYear() + 1, 11, 25);
+  const days = Math.ceil((noel - now) / 86400000);
+  el.textContent = days === 0 ? "C'est Noël aujourd'hui ! 🎄"
+    : "Noël dans " + days + " jour" + (days > 1 ? "s" : "");
+</script>
+</body>
+</html>
